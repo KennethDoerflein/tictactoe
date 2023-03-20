@@ -231,13 +231,33 @@ public class TicTacToe2 extends JPanel implements ActionListener {
         playerX = false;
     }
 
-    private Move findBestMove(int[][] board) {
-        int bestVal = -1000;
+    private static Move findBestMove(int[][] board) {
+        int bestVal = Integer.MIN_VALUE;
         Move bestMove = new Move();
         bestMove.setRow(-1);
         bestMove.setCol(-1);
 
+        for (int row = 0; row < board.length; row++){
+            for (int col = 0; col < board[row].length; col++){
+                if (board[row][col] == 0){
+                    board[row][col]= 1;
+                    int minimaxVal = minimax(board, 0, false);
+                    board[row][col] = 0;
+                    if (minimaxVal > bestVal){
+                        bestMove.setRow(row);
+                        bestMove.setCol(col);
+                        bestVal = minimaxVal;
+                    }
+                }
+            }
+        }
+        System.out.println("Minimax value uses is " + bestVal);
         return bestMove;
+    }
+
+    static int minimax(int board[][], int depth, Boolean isMax){
+
+        return 0;
     }
 
     @Override
