@@ -1,13 +1,34 @@
 // GUI Source https://copyassignment.com/gui-tic-tac-toe-game-in-java/
-
+// Algorithm Reference https://www.geeksforgeeks.org/finding-optimal-move-in-tic-tac-toe-using-minimax-algorithm-in-game-theory/
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
+import java.util.concurrent.TimeUnit;
 
 public class TicTacToe2 extends JPanel implements ActionListener {
+    static class Move
+    {
+        private int row, col;
+
+        public int getCol() {
+            return col;
+        }
+
+        public int getRow() {
+            return row;
+        }
+
+        public void setCol(int col) {
+            this.col = col;
+        }
+
+        public void setRow(int row) {
+            this.row = row;
+        }
+    };
 
     // core logic variables
     boolean playerX; // true if player X's turn, false if player O's turn
@@ -150,7 +171,7 @@ public class TicTacToe2 extends JPanel implements ActionListener {
         public void mouseClicked(MouseEvent event) {
             selX = -1;
             selY = -1;
-            if (gameDone == false) {
+            if (!gameDone && !playerX) {
                 a = event.getX();
                 b = event.getY();
                 int selX = 0, selY = 0;
@@ -176,12 +197,10 @@ public class TicTacToe2 extends JPanel implements ActionListener {
                 if (selX != -1 && selY != -1) {
 
                     if (board[selX][selY] == 0) {
-                        if (playerX) {
-                            board[selX][selY] = 1;
-                            playerX = false;
-                        } else {
+                        if (!playerX) {
                             board[selX][selY] = 2;
                             playerX = true;
+                            playerx();
                         }
                         //checkWinner();
                         //System.out.println(" CLICK= x:" + a + ",y: " + b + "; selX,selY: " + selX + "," + selY);
@@ -204,6 +223,21 @@ public class TicTacToe2 extends JPanel implements ActionListener {
 
         public void mousePressed(MouseEvent event) {
         }
+    }
+
+    private void playerx() {
+        //board[0][1] = 1;
+        Move bestMove = findBestMove(board);
+        playerX = false;
+    }
+
+    private Move findBestMove(int[][] board) {
+        int bestVal = -1000;
+        Move bestMove = new Move();
+        bestMove.setRow(-1);
+        bestMove.setCol(-1);
+
+        return bestMove;
     }
 
     @Override
