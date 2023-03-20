@@ -217,7 +217,6 @@ public class TicTacToe extends JPanel implements ActionListener {
                 System.out.println("It's a tie");
             }
             gameDone = true;
-            getJButton().setVisible(true);
         }
     }
 
