@@ -34,18 +34,15 @@ public class TicTacToe extends JPanel implements ActionListener {
     int selY = 0; // selected square y
 
     // COLORS
-    Color turtle = new Color(255,255,255);
-    Color orange = new Color(255, 165, 0);
-    Color offwhite = new Color(0x000000);
-    Color darkgray = new Color(0, 0, 0);
-    Color pink = new Color(255, 255, 255);
+    Color  white = new Color(255,255,255);
+    Color  black = new Color(0x000000);
 
     // COMPONENTS
     JButton jButton;
 
     // CONSTRUCTOR
     public TicTacToe() {
-        Dimension size = new Dimension(430, 300); // size of the panel
+        Dimension size = new Dimension(450, 300); // size of the panel
         setPreferredSize(size);
         setMaximumSize(size);
         setMinimumSize(size);
@@ -60,8 +57,8 @@ public class TicTacToe extends JPanel implements ActionListener {
     }
 
     public void drawBoard(Graphics page) {
-        setBackground(turtle);
-        page.setColor(darkgray);
+        setBackground( white);
+        page.setColor( black);
         page.fillRoundRect(x, y, lineLength, lineWidth, 5, 30);
         page.fillRoundRect(x, y + offset, lineLength, lineWidth, 5, 30);
         page.fillRoundRect(y, x, lineWidth, lineLength, 30, 5);
@@ -70,32 +67,32 @@ public class TicTacToe extends JPanel implements ActionListener {
 
     public void drawUI(Graphics page) {
         // SET COLOR AND FONT
-        page.setColor(pink);
+        page.setColor( white);
         page.fillRect(300, 0, 120, 300);
         Font font = new Font("Helvetica",  Font.BOLD, 20);
         page.setFont(font);
 
         // SET WIN COUNTER
-        page.setColor(offwhite);
+        page.setColor( black);
         page.drawString("Win Count", 310, 30);
         page.drawString(": " + player1wins, 362, 70);
         page.drawString(": " + player2wins, 362, 105);
 
         // DRAW score X
-        ImageIcon xIcon = new ImageIcon("orangex.png");
+        ImageIcon xIcon = new ImageIcon("blackX.png");
         Image xImg = xIcon.getImage();
         Image newXImg = xImg.getScaledInstance(27, 27, java.awt.Image.SCALE_SMOOTH);
         ImageIcon newXIcon = new ImageIcon(newXImg);
         page.drawImage(newXIcon.getImage(), 44 + offset * 1 + 190, 47 + offset * 0, null);
 
         // DRAW score O
-        page.setColor(offwhite);
+        page.setColor( black);
         page.fillOval(43 + 190 + offset, 80, 30, 30);
-        page.setColor(pink);
+        page.setColor( white);
         page.fillOval(49 + 190 + offset, 85, 19, 19);
 
         // DRAW WHOS TURN or WINNER
-        page.setColor(offwhite);
+        page.setColor( black);
         Font font1 = new Font(" Courier",  Font.BOLD, 18);
         page.setFont(font1);
 
@@ -105,9 +102,9 @@ public class TicTacToe extends JPanel implements ActionListener {
                 page.drawImage(xImg, 335, 160, null);
             } else if (winner == 2) { // o
                 page.drawString("The winner is", 310, 150);
-                page.setColor(offwhite);
+                page.setColor( black);
                 page.fillOval(332, 160, 50, 50);
-                page.setColor(pink);
+                page.setColor( white);
                 page.fillOval(342, 170, 30, 30);
             } else if (winner == 3) { // tie
                 page.drawString("It's a tie", 330, 178);
@@ -132,13 +129,13 @@ public class TicTacToe extends JPanel implements ActionListener {
                 if (board[i][j] == 0) {
 
                 } else if (board[i][j] == 1) {
-                    ImageIcon xIcon = new ImageIcon("orangex.png");
+                    ImageIcon xIcon = new ImageIcon("blackX.png");
                     Image xImg = xIcon.getImage();
                     page.drawImage(xImg, 30 + offset * i, 30 + offset * j, null);
                 } else if (board[i][j] == 2) {
-                    page.setColor(offwhite);
+                    page.setColor( black);
                     page.fillOval(30 + offset * i, 30 + offset * j, 50, 50);
-                    page.setColor(turtle);
+                    page.setColor( white);
                     page.fillOval(40 + offset * i, 40 + offset * j, 30, 30);
                 }
             }
