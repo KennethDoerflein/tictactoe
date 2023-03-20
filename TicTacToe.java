@@ -38,14 +38,14 @@ public class TicTacToe extends JPanel implements ActionListener {
     Color orange = new Color(255, 165, 0);
     Color offwhite = new Color(0x000000);
     Color darkgray = new Color(0, 0, 0);
-    Color pink = new Color(25, 90, 25);
+    Color pink = new Color(255, 255, 255);
 
     // COMPONENTS
     JButton jButton;
 
     // CONSTRUCTOR
     public TicTacToe() {
-        Dimension size = new Dimension(420, 300); // size of the panel
+        Dimension size = new Dimension(430, 300); // size of the panel
         setPreferredSize(size);
         setMaximumSize(size);
         setMinimumSize(size);
@@ -72,7 +72,7 @@ public class TicTacToe extends JPanel implements ActionListener {
         // SET COLOR AND FONT
         page.setColor(pink);
         page.fillRect(300, 0, 120, 300);
-        Font font = new Font("Helvetica", Font.PLAIN, 20);
+        Font font = new Font("Helvetica",  Font.BOLD, 20);
         page.setFont(font);
 
         // SET WIN COUNTER
@@ -96,7 +96,7 @@ public class TicTacToe extends JPanel implements ActionListener {
 
         // DRAW WHOS TURN or WINNER
         page.setColor(offwhite);
-        Font font1 = new Font("Serif", Font.PLAIN, 18);
+        Font font1 = new Font(" Courier",  Font.BOLD, 18);
         page.setFont(font1);
 
         if (gameDone) {
@@ -107,13 +107,13 @@ public class TicTacToe extends JPanel implements ActionListener {
                 page.drawString("The winner is", 310, 150);
                 page.setColor(offwhite);
                 page.fillOval(332, 160, 50, 50);
-                page.setColor(darkgray);
+                page.setColor(pink);
                 page.fillOval(342, 170, 30, 30);
             } else if (winner == 3) { // tie
                 page.drawString("It's a tie", 330, 178);
             }
         } else {
-            Font font2 = new Font("Serif", Font.PLAIN, 24);
+            Font font2 = new Font(" Courier",  Font.BOLD, 24);
             page.setFont(font2);
             page.drawString("", 350, 160);
             if (playerX) {
