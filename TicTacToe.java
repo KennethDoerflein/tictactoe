@@ -33,6 +33,7 @@ public class TicTacToe extends JPanel implements ActionListener {
 
     // core logic variables
     static boolean playerX; // true if player X's turn, false if player O's turn
+    static boolean xThinking;
     static boolean gameDone = false; // true if game is over
     static int winner = -1; // 0 if X wins, 1 if O wins, -1 if no winner yet
     static int xWins = 0;
@@ -78,10 +79,13 @@ public class TicTacToe extends JPanel implements ActionListener {
 
     @Override
     public void paintComponent(Graphics page) {
-        super.paintComponent(page);
-        drawBoard(page);
-        drawUI(page);
-        drawGame(page);
+
+            super.paintComponent(page);
+            drawBoard(page);
+            drawUI(page);
+        if (!xThinking) {
+            drawGame(page);
+        }
     }
 
     public void drawBoard(Graphics page) {
@@ -229,7 +233,10 @@ public class TicTacToe extends JPanel implements ActionListener {
                                     new java.util.TimerTask() {
                                         @Override
                                         public void run() {
+                                            xThinking = true;
                                             playerx();
+                                            xThinking = false;
+                                            repaint();
                                             int status = checkBoardStatus(board);
                                             if (status == 10) {
                                                 gameDone = true;
@@ -247,14 +254,9 @@ public class TicTacToe extends JPanel implements ActionListener {
                                     },
                                     500
                             );
-                            //playerx();
                         }
-
                         //System.out.println(" CLICK= x:" + a + ",y: " + b + "; selX,selY: " + selX + "," + selY);
-
                     }
-                } else {
-                    //System.out.println("invalid click");
                 }
             }
         }
@@ -272,8 +274,7 @@ public class TicTacToe extends JPanel implements ActionListener {
         }
     }
 
-    private void playerx() {
-        //board[0][1] = 1;
+    public static void playerx() {
         Move bestMove = findBestMove(board);
         //System.out.println(bestMove.getRow());
         //System.out.println(bestMove.getCol());
