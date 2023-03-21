@@ -50,7 +50,7 @@ public class TicTacToe extends JPanel implements ActionListener {
     Color white = new Color(255, 255, 255);
     Color black = new Color(0, 0, 0);
 
-    JButton resetButton;
+    static JButton resetButton;
 
     // CONSTRUCTOR
     public TicTacToe() {
@@ -72,7 +72,8 @@ public class TicTacToe extends JPanel implements ActionListener {
         board = new int[3][3];
         winner = -1;
         gameDone = false;
-        //getJButton().setVisible(false);
+        playerX = false;
+        resetButton.setVisible(false);
     }
 
     @Override
