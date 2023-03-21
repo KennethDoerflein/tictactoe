@@ -1,5 +1,6 @@
 // GUI Source https://copyassignment.com/gui-tic-tac-toe-game-in-java/
 // Algorithm Reference https://www.geeksforgeeks.org/finding-optimal-move-in-tic-tac-toe-using-minimax-algorithm-in-game-theory/
+
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
@@ -13,8 +14,7 @@ import java.util.Arrays;
 import java.util.concurrent.TimeUnit;
 
 public class TicTacToe2 extends JPanel implements ActionListener {
-    static class Move
-    {
+    static class Move {
         private int row, col;
 
         public int getCol() {
@@ -32,7 +32,9 @@ public class TicTacToe2 extends JPanel implements ActionListener {
         public void setRow(int row) {
             this.row = row;
         }
-    };
+    }
+
+    ;
 
     // core logic variables
     static boolean playerX; // true if player X's turn, false if player O's turn
@@ -54,8 +56,8 @@ public class TicTacToe2 extends JPanel implements ActionListener {
     static int selY = 0; // selected square y
 
     // COLORS
-    Color  white = new Color(255,255,255);
-    Color  black = new Color(0,0,0);
+    Color white = new Color(255, 255, 255);
+    Color black = new Color(0, 0, 0);
 
     // CONSTRUCTOR
     public TicTacToe2() {
@@ -75,8 +77,8 @@ public class TicTacToe2 extends JPanel implements ActionListener {
     }
 
     public void drawBoard(Graphics page) {
-        setBackground( white);
-        page.setColor( black);
+        setBackground(white);
+        page.setColor(black);
         page.fillRoundRect(x, y, lineLength, lineWidth, 5, 30);
         page.fillRoundRect(x, y + offset, lineLength, lineWidth, 5, 30);
         page.fillRoundRect(y, x, lineWidth, lineLength, 30, 5);
@@ -85,13 +87,13 @@ public class TicTacToe2 extends JPanel implements ActionListener {
 
     public void drawUI(Graphics page) {
         // SET COLOR AND FONT
-        page.setColor( white);
+        page.setColor(white);
         page.fillRect(300, 0, 120, 300);
-        Font font = new Font("Helvetica",  Font.BOLD, 20);
+        Font font = new Font("Helvetica", Font.BOLD, 20);
         page.setFont(font);
 
         // SET WIN COUNTER
-        page.setColor( black);
+        page.setColor(black);
         page.drawString("Win Count", 310, 30);
         page.drawString(": " + xWins, 362, 70);
         page.drawString(": " + oWins, 362, 105);
@@ -104,14 +106,14 @@ public class TicTacToe2 extends JPanel implements ActionListener {
         page.drawImage(newXIcon.getImage(), 44 + offset * 1 + 190, 47 + offset * 0, null);
 
         // DRAW score O
-        page.setColor( black);
+        page.setColor(black);
         page.fillOval(43 + 190 + offset, 80, 30, 30);
-        page.setColor( white);
+        page.setColor(white);
         page.fillOval(49 + 190 + offset, 85, 19, 19);
 
         // DRAW WHO'S TURN or WINNER
-        page.setColor( black);
-        Font font1 = new Font(" Courier",  Font.BOLD, 18);
+        page.setColor(black);
+        Font font1 = new Font(" Courier", Font.BOLD, 18);
         page.setFont(font1);
 
         if (gameDone) {
@@ -120,15 +122,15 @@ public class TicTacToe2 extends JPanel implements ActionListener {
                 page.drawImage(xImg, 335, 160, null);
             } else if (winner == 2) { // o
                 page.drawString("The winner is", 310, 150);
-                page.setColor( black);
+                page.setColor(black);
                 page.fillOval(332, 160, 50, 50);
-                page.setColor( white);
+                page.setColor(white);
                 page.fillOval(342, 170, 30, 30);
             } else if (winner == 3) { // tie
                 page.drawString("It's a tie", 330, 178);
             }
         } else {
-            Font font2 = new Font(" Courier",  Font.BOLD, 24);
+            Font font2 = new Font(" Courier", Font.BOLD, 24);
             page.setFont(font2);
             page.drawString("", 350, 160);
             if (playerX) {
@@ -151,9 +153,9 @@ public class TicTacToe2 extends JPanel implements ActionListener {
                     Image xImg = xIcon.getImage();
                     page.drawImage(xImg, 30 + offset * i, 30 + offset * j, null);
                 } else if (board[i][j] == 2) {
-                    page.setColor( black);
+                    page.setColor(black);
                     page.fillOval(30 + offset * i, 30 + offset * j, 50, 50);
-                    page.setColor( white);
+                    page.setColor(white);
                     page.fillOval(40 + offset * i, 40 + offset * j, 30, 30);
                 }
             }
@@ -207,26 +209,36 @@ public class TicTacToe2 extends JPanel implements ActionListener {
                             board[selX][selY] = 2;
                             playerX = true;
                         }
-                        int status = checkBoardStatus(board);
-                        if (!checkBoardFull(board)){
+
+                        if (!checkBoardFull(board)) {
                             gameDone = true;
                             winner = 3;
-                            xWins+=1;
-                            oWins+=1;
-                        }else{
-                            playerx();
-                            status = checkBoardStatus(board);
+                            xWins += 1;
+                            oWins += 1;
+                        } else {
+                            new java.util.Timer().schedule(
+                                    new java.util.TimerTask() {
+                                        @Override
+                                        public void run() {
+                                            playerx();
+                                            int status = checkBoardStatus(board);
+                                            if (status == 10) {
+                                                gameDone = true;
+                                                winner = player;
+                                                xWins += 1;
+                                            }
+                                            if (status == -10) {
+                                                gameDone = true;
+                                                winner = opponent;
+                                                oWins += 1;
+                                            }
+                                        }
+                                    },
+                                    500
+                            );
+                            //playerx();
                         }
-                        if (status == 10){
-                            gameDone = true;
-                            winner = player;
-                            xWins+=1;
-                        }
-                        if (status == -10){
-                            gameDone = true;
-                            winner = opponent;
-                            oWins+=1;
-                        }
+
                         //System.out.println(" CLICK= x:" + a + ",y: " + b + "; selX,selY: " + selX + "," + selY);
 
                     }
@@ -264,14 +276,14 @@ public class TicTacToe2 extends JPanel implements ActionListener {
         bestMove.setRow(-1);
         bestMove.setCol(-1);
 
-        for (int row = 0; row < board.length; row++){
-            for (int col = 0; col < board[row].length; col++){
-                if (board[row][col] == 0){
+        for (int row = 0; row < board.length; row++) {
+            for (int col = 0; col < board[row].length; col++) {
+                if (board[row][col] == 0) {
                     board[row][col] = player;
                     int minimaxVal = minimax(board, 0, false);
                     board[row][col] = 0;
                     //System.out.println(minimaxVal);
-                    if (minimaxVal > bestVal){
+                    if (minimaxVal > bestVal) {
                         bestMove.setRow(row);
                         bestMove.setCol(col);
                         bestVal = minimaxVal;
@@ -282,7 +294,7 @@ public class TicTacToe2 extends JPanel implements ActionListener {
         return bestMove;
     }
 
-    public static int minimax(int board[][], int depth, Boolean isMax){
+    public static int minimax(int board[][], int depth, Boolean isMax) {
         int score = checkBoardStatus(board);
         // If Maximizer has won the game
         // return his/her evaluated score
@@ -297,11 +309,11 @@ public class TicTacToe2 extends JPanel implements ActionListener {
         if (checkBoardFull(board) == false)
             return 0;
 
-        if (isMax){
+        if (isMax) {
             int best = Integer.MIN_VALUE;
-            for (int row = 0; row < board.length; row++){
-                for (int col = 0; col < board[row].length; col++){
-                    if (board[row][col] == 0){
+            for (int row = 0; row < board.length; row++) {
+                for (int col = 0; col < board[row].length; col++) {
+                    if (board[row][col] == 0) {
                         board[row][col] = player;
                         best = Math.max(best, minimax(board, depth++, !isMax));
                         board[row][col] = 0;
@@ -311,9 +323,9 @@ public class TicTacToe2 extends JPanel implements ActionListener {
             return best;
         } else {
             int best = Integer.MAX_VALUE;
-            for (int row = 0; row < board.length; row++){
-                for (int col = 0; col < board[row].length; col++){
-                    if (board[row][col] == 0){
+            for (int row = 0; row < board.length; row++) {
+                for (int col = 0; col < board[row].length; col++) {
+                    if (board[row][col] == 0) {
                         board[row][col] = opponent;
                         best = Math.min(best, minimax(board, depth++, !isMax));
                         board[row][col] = 0;
@@ -323,10 +335,10 @@ public class TicTacToe2 extends JPanel implements ActionListener {
             return best;
         }
     }
-    static Boolean checkBoardFull(int board[][])
-    {
+
+    static Boolean checkBoardFull(int board[][]) {
         for (int row = 0; row < board.length; row++) {
-            for (int col = 0; col < board[row].length; col++){
+            for (int col = 0; col < board[row].length; col++) {
                 if (board[row][col] == 0) {
                     return true;
                 }
@@ -334,7 +346,8 @@ public class TicTacToe2 extends JPanel implements ActionListener {
         }
         return false;
     }
-    public static int checkBoardStatus(int board[][]){
+
+    public static int checkBoardStatus(int board[][]) {
 
         // Checking rows for win
         for (int row = 0; row < board.length; row++) {
