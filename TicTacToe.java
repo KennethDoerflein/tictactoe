@@ -291,18 +291,13 @@ public class TicTacToe extends JPanel implements ActionListener {
 
     public static int minimax(int board[][], int depth, Boolean isMax) {
         int score = checkBoardStatus(board);
-        // If Maximizer has won the game
-        // return his/her evaluated score
-        if (score == 10)
+        if (score == 10 || score == -10) {
             return score;
+        }
 
-        // If Minimizer has won the game
-        // return his/her evaluated score
-        if (score == -10)
-            return score;
-
-        if (checkBoardFull(board) == false)
+        if (checkBoardFull(board) == false) {
             return 0;
+        }
 
         if (isMax) {
             int best = Integer.MIN_VALUE;
