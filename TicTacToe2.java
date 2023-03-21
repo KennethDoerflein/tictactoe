@@ -6,6 +6,10 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
+import java.util.Date;
+import java.util.Timer;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.concurrent.TimeUnit;
 
 public class TicTacToe2 extends JPanel implements ActionListener {
@@ -31,21 +35,23 @@ public class TicTacToe2 extends JPanel implements ActionListener {
     };
 
     // core logic variables
-    boolean playerX; // true if player X's turn, false if player O's turn
-    boolean gameDone = false; // true if game is over
-    int winner = -1; // 0 if X wins, 1 if O wins, -1 if no winner yet
-    int player1wins = 0, player2wins = 0; // number of wins for each player
-    int[][] board = new int[3][3]; // 0 if empty, 1 if X, 2 if O
+    static boolean playerX; // true if player X's turn, false if player O's turn
+    static boolean gameDone = false; // true if game is over
+    static int winner = -1; // 0 if X wins, 1 if O wins, -1 if no winner yet
+    static int xWins = 0;
+    static int oWins = 0; // number of wins for each player
+    static int[][] board = new int[3][3]; // 0 if empty, 1 if X, 2 if O
+    static int player = 1, opponent = 2;
 
     // paint variables
-    int lineWidth = 5; // width of the lines
-    int lineLength = 270; // length of the lines
-    int x = 15, y = 100; // location of first line
-    int offset = 95; // square width
-    int a = 0; // used for drawing the X's and O's
-    int b = 5; // used for drawing the X's and O's
-    int selX = 0; // selected square x
-    int selY = 0; // selected square y
+    static int lineWidth = 5; // width of the lines
+    static int lineLength = 270; // length of the lines
+    static int x = 15, y = 100; // location of first line
+    static int offset = 95; // square width
+    static int a = 0; // used for drawing the X's and O's
+    static int b = 5; // used for drawing the X's and O's
+    static int selX = 0; // selected square x
+    static int selY = 0; // selected square y
 
     // COLORS
     Color  white = new Color(255,255,255);
@@ -60,6 +66,7 @@ public class TicTacToe2 extends JPanel implements ActionListener {
         addMouseListener(new XOListener()); // add mouse listener
     }
 
+    @Override
     public void paintComponent(Graphics page) {
         super.paintComponent(page);
         drawBoard(page);
@@ -86,8 +93,8 @@ public class TicTacToe2 extends JPanel implements ActionListener {
         // SET WIN COUNTER
         page.setColor( black);
         page.drawString("Win Count", 310, 30);
-        page.drawString(": " + player1wins, 362, 70);
-        page.drawString(": " + player2wins, 362, 105);
+        page.drawString(": " + xWins, 362, 70);
+        page.drawString(": " + oWins, 362, 105);
 
         // DRAW score X
         ImageIcon xIcon = new ImageIcon("blackX.png");
@@ -157,7 +164,6 @@ public class TicTacToe2 extends JPanel implements ActionListener {
     public static void main(String[] args) {
         JFrame frame = new JFrame("Tic Tac Toe");
         frame.getContentPane();
-
         TicTacToe2 gamePanel = new TicTacToe2();
         frame.add(gamePanel);
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -200,9 +206,27 @@ public class TicTacToe2 extends JPanel implements ActionListener {
                         if (!playerX) {
                             board[selX][selY] = 2;
                             playerX = true;
-                            playerx();
                         }
-                        //checkWinner();
+                        int status = checkBoardStatus(board);
+                        if (!checkBoardFull(board)){
+                            gameDone = true;
+                            winner = 3;
+                            xWins+=1;
+                            oWins+=1;
+                        }else{
+                            playerx();
+                            status = checkBoardStatus(board);
+                        }
+                        if (status == 10){
+                            gameDone = true;
+                            winner = player;
+                            xWins+=1;
+                        }
+                        if (status == -10){
+                            gameDone = true;
+                            winner = opponent;
+                            oWins+=1;
+                        }
                         //System.out.println(" CLICK= x:" + a + ",y: " + b + "; selX,selY: " + selX + "," + selY);
 
                     }
@@ -228,10 +252,13 @@ public class TicTacToe2 extends JPanel implements ActionListener {
     private void playerx() {
         //board[0][1] = 1;
         Move bestMove = findBestMove(board);
+        //System.out.println(bestMove.getRow());
+        //System.out.println(bestMove.getCol());
+        board[bestMove.getRow()][bestMove.getCol()] = 1;
         playerX = false;
     }
 
-    private static Move findBestMove(int[][] board) {
+    public static Move findBestMove(int board[][]) {
         int bestVal = Integer.MIN_VALUE;
         Move bestMove = new Move();
         bestMove.setRow(-1);
@@ -240,9 +267,10 @@ public class TicTacToe2 extends JPanel implements ActionListener {
         for (int row = 0; row < board.length; row++){
             for (int col = 0; col < board[row].length; col++){
                 if (board[row][col] == 0){
-                    board[row][col]= 1;
+                    board[row][col] = player;
                     int minimaxVal = minimax(board, 0, false);
                     board[row][col] = 0;
+                    //System.out.println(minimaxVal);
                     if (minimaxVal > bestVal){
                         bestMove.setRow(row);
                         bestMove.setCol(col);
@@ -251,11 +279,100 @@ public class TicTacToe2 extends JPanel implements ActionListener {
                 }
             }
         }
-        System.out.println("Minimax value uses is " + bestVal);
         return bestMove;
     }
 
-    static int minimax(int board[][], int depth, Boolean isMax){
+    public static int minimax(int board[][], int depth, Boolean isMax){
+        int score = checkBoardStatus(board);
+        // If Maximizer has won the game
+        // return his/her evaluated score
+        if (score == 10)
+            return score;
+
+        // If Minimizer has won the game
+        // return his/her evaluated score
+        if (score == -10)
+            return score;
+
+        if (checkBoardFull(board) == false)
+            return 0;
+
+        if (isMax){
+            int best = Integer.MIN_VALUE;
+            for (int row = 0; row < board.length; row++){
+                for (int col = 0; col < board[row].length; col++){
+                    if (board[row][col] == 0){
+                        board[row][col] = player;
+                        best = Math.max(best, minimax(board, depth++, !isMax));
+                        board[row][col] = 0;
+                    }
+                }
+            }
+            return best;
+        } else {
+            int best = Integer.MAX_VALUE;
+            for (int row = 0; row < board.length; row++){
+                for (int col = 0; col < board[row].length; col++){
+                    if (board[row][col] == 0){
+                        board[row][col] = opponent;
+                        best = Math.min(best, minimax(board, depth++, !isMax));
+                        board[row][col] = 0;
+                    }
+                }
+            }
+            return best;
+        }
+    }
+    static Boolean checkBoardFull(int board[][])
+    {
+        for (int row = 0; row < board.length; row++) {
+            for (int col = 0; col < board[row].length; col++){
+                if (board[row][col] == 0) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+    public static int checkBoardStatus(int board[][]){
+
+        // Checking rows for win
+        for (int row = 0; row < board.length; row++) {
+            if (board[row][0] == board[row][1] && board[row][0] == board[row][2]) {
+                if (board[row][0] == player) {
+                    return 10;
+                } else if (board[row][0] == opponent) {
+                    return -10;
+                }
+            }
+        }
+
+        // Checking columns for win
+        for (int col = 0; col < board.length; col++) {
+            if (board[0][col] == board[1][col] && board[0][col] == board[2][col]) {
+                if (board[0][col] == player) {
+                    return 10;
+                } else if (board[0][col] == opponent) {
+                    return -10;
+                }
+            }
+        }
+
+        // Checking diagonals for win
+        if (board[0][0] == board[1][1] && board[0][0] == board[2][2]) {
+            if (board[0][0] == player) {
+                return 10;
+            } else if (board[0][0] == opponent) {
+                return -10;
+            }
+        }
+        if (board[0][2] == board[1][1] && board[0][2] == board[2][0]) {
+            if (board[0][2] == player) {
+                return 10;
+            } else if (board[0][2] == opponent) {
+                return -10;
+            }
+        }
 
         return 0;
     }
