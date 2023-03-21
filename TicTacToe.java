@@ -41,10 +41,6 @@ public class TicTacToe extends JPanel implements ActionListener {
     static int player = 1, opponent = 2;
 
     // paint variables
-    static int lineWidth = 5; // width of the lines
-    static int lineLength = 270; // length of the lines
-    static int x = 15, y = 100; // location of first line
-    static int offset = 95; // square width
     static int a = 0; // used for drawing the X's and O's
     static int b = 5; // used for drawing the X's and O's
     static int selX = 0; // selected square x
@@ -54,6 +50,8 @@ public class TicTacToe extends JPanel implements ActionListener {
     Color white = new Color(255, 255, 255);
     Color black = new Color(0, 0, 0);
 
+    JButton resetButton;
+
     // CONSTRUCTOR
     public TicTacToe() {
         Dimension size = new Dimension(450, 300); // size of the panel
@@ -61,6 +59,20 @@ public class TicTacToe extends JPanel implements ActionListener {
         setMaximumSize(size);
         setMinimumSize(size);
         addMouseListener(new XOListener()); // add mouse listener
+        resetButton = new JButton("New Game");
+        resetButton.addActionListener(this);
+        resetButton.setBounds(300,250,100,30);
+        setLayout(null);
+        add(resetButton);
+        resetButton.setVisible(false);
+        resetButton.setLocation(320,250);
+        newGame();
+    }
+    public static void newGame(){
+        board = new int[3][3];
+        winner = -1;
+        gameDone = false;
+        //getJButton().setVisible(false);
     }
 
     @Override
@@ -74,10 +86,10 @@ public class TicTacToe extends JPanel implements ActionListener {
     public void drawBoard(Graphics page) {
         setBackground(white);
         page.setColor(black);
-        page.fillRoundRect(x, y, lineLength, lineWidth, 5, 30);
-        page.fillRoundRect(x, y + offset, lineLength, lineWidth, 5, 30);
-        page.fillRoundRect(y, x, lineWidth, lineLength, 30, 5);
-        page.fillRoundRect(y + offset, x, lineWidth, lineLength, 30, 5);
+        page.fillRoundRect(15, 100, 270, 5, 5, 30);
+        page.fillRoundRect(15, 100 + 95, 270, 5, 5, 30);
+        page.fillRoundRect(100, 15, 5, 270, 30, 5);
+        page.fillRoundRect(100 + 95, 15, 5, 270, 30, 5);
     }
 
     public void drawUI(Graphics page) {
@@ -98,13 +110,13 @@ public class TicTacToe extends JPanel implements ActionListener {
         Image xImg = xIcon.getImage();
         Image newXImg = xImg.getScaledInstance(27, 27, Image.SCALE_SMOOTH);
         ImageIcon newXIcon = new ImageIcon(newXImg);
-        page.drawImage(newXIcon.getImage(), 44 + offset * 1 + 190, 47 + offset * 0, null);
+        page.drawImage(newXIcon.getImage(), 44 + 95 * 1 + 190, 47 + 95 * 0, null);
 
         // DRAW score O
         page.setColor(black);
-        page.fillOval(43 + 190 + offset, 80, 30, 30);
+        page.fillOval(43 + 190 + 95, 80, 30, 30);
         page.setColor(white);
-        page.fillOval(49 + 190 + offset, 85, 19, 19);
+        page.fillOval(49 + 190 + 95, 85, 19, 19);
 
         // DRAW WHO'S TURN or WINNER
         page.setColor(black);
@@ -146,12 +158,12 @@ public class TicTacToe extends JPanel implements ActionListener {
                 } else if (board[i][j] == 1) {
                     ImageIcon xIcon = new ImageIcon("blackX.png");
                     Image xImg = xIcon.getImage();
-                    page.drawImage(xImg, 30 + offset * i, 30 + offset * j, null);
+                    page.drawImage(xImg, 30 + 95 * i, 30 + 95 * j, null);
                 } else if (board[i][j] == 2) {
                     page.setColor(black);
-                    page.fillOval(30 + offset * i, 30 + offset * j, 50, 50);
+                    page.fillOval(30 + 95 * i, 30 + 95 * j, 50, 50);
                     page.setColor(white);
-                    page.fillOval(40 + offset * i, 40 + offset * j, 30, 30);
+                    page.fillOval(40 + 95 * i, 40 + 95 * j, 30, 30);
                 }
             }
         }
@@ -210,6 +222,7 @@ public class TicTacToe extends JPanel implements ActionListener {
                             winner = 3;
                             xWins += 1;
                             oWins += 1;
+                            resetButton.setVisible(true);
                         } else {
                             new java.util.Timer().schedule(
                                     new java.util.TimerTask() {
@@ -221,11 +234,13 @@ public class TicTacToe extends JPanel implements ActionListener {
                                                 gameDone = true;
                                                 winner = player;
                                                 xWins += 1;
+                                                resetButton.setVisible(true);
                                             }
                                             if (status == -10) {
                                                 gameDone = true;
                                                 winner = opponent;
                                                 oWins += 1;
+                                                resetButton.setVisible(true);
                                             }
                                         }
                                     },
@@ -382,6 +397,7 @@ public class TicTacToe extends JPanel implements ActionListener {
 
     @Override
     public void actionPerformed(ActionEvent e) {
+        newGame();
     }
 
 }
