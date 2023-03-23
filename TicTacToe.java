@@ -9,27 +9,6 @@ import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 
 public class TicTacToe extends JPanel implements ActionListener {
-    static class Move {
-        private int row, col;
-
-        public int getCol() {
-            return col;
-        }
-
-        public int getRow() {
-            return row;
-        }
-
-        public void setCol(int col) {
-            this.col = col;
-        }
-
-        public void setRow(int row) {
-            this.row = row;
-        }
-    }
-
-    ;
 
     // core logic variables
     static boolean playerX; // true if player X's turn, false if player O's turn
@@ -39,7 +18,8 @@ public class TicTacToe extends JPanel implements ActionListener {
     static int xWins = 0;
     static int oWins = 0; // number of wins for each player
     static int[][] board = new int[3][3]; // 0 if empty, 1 if X, 2 if O
-    static int computer  = 1, human = 2;
+    static int computer = 1, human = 2;
+    static int[] bestMove = {-1, -1};
 
     // paint variables
     static int a = 0; // used for drawing the X's and O's
@@ -62,14 +42,14 @@ public class TicTacToe extends JPanel implements ActionListener {
         addMouseListener(new XOListener()); // add mouse listener
         resetButton = new JButton("New Game");
         resetButton.addActionListener(this);
-        resetButton.setBounds(300,250,100,30);
+        resetButton.setBounds(300, 250, 100, 30);
         setLayout(null);
         add(resetButton);
         resetButton.setVisible(false);
-        resetButton.setLocation(320,250);
-        newGame();
+        resetButton.setLocation(320, 250);
     }
-    public static void newGame(){
+
+    public static void newGame() {
         board = new int[3][3];
         winner = -1;
         gameDone = false;
@@ -79,10 +59,9 @@ public class TicTacToe extends JPanel implements ActionListener {
 
     @Override
     public void paintComponent(Graphics page) {
-
-            super.paintComponent(page);
-            drawBoard(page);
-            drawUI(page);
+        super.paintComponent(page);
+        drawBoard(page);
+        drawUI(page);
         if (!xThinking) {
             drawGame(page);
         }
@@ -91,16 +70,14 @@ public class TicTacToe extends JPanel implements ActionListener {
     public void drawBoard(Graphics page) {
         setBackground(white);
         page.setColor(black);
-        page.fillRoundRect(15, 100, 270, 5, 5, 30);
-        page.fillRoundRect(15, 100 + 95, 270, 5, 5, 30);
-        page.fillRoundRect(100, 15, 5, 270, 30, 5);
-        page.fillRoundRect(100 + 95, 15, 5, 270, 30, 5);
+        page.fillRect(15, 100, 270, 5);
+        page.fillRect(15, 195, 270, 5);
+        page.fillRect(100, 15, 5, 270);
+        page.fillRect(195, 15, 5, 270);
     }
 
     public void drawUI(Graphics page) {
-        // SET COLOR AND FONT
-        page.setColor(white);
-        page.fillRect(300, 0, 120, 300);
+        // SET FONT
         Font font = new Font("Helvetica", Font.BOLD, 20);
         page.setFont(font);
 
@@ -111,17 +88,16 @@ public class TicTacToe extends JPanel implements ActionListener {
         page.drawString(": " + oWins, 362, 105);
 
         // DRAW score X
-        ImageIcon xIcon = new ImageIcon("blackX.png");
-        Image xImg = xIcon.getImage();
-        Image newXImg = xImg.getScaledInstance(27, 27, Image.SCALE_SMOOTH);
-        ImageIcon newXIcon = new ImageIcon(newXImg);
-        page.drawImage(newXIcon.getImage(), 44 + 95 * 1 + 190, 47 + 95 * 0, null);
+        Graphics2D page2 = (Graphics2D) page;
+        page2.setStroke(new BasicStroke(7));
+        page2.drawLine(332, 55, 352,75);
+        page2.drawLine(352, 55, 332, 75);
 
         // DRAW score O
         page.setColor(black);
-        page.fillOval(43 + 190 + 95, 80, 30, 30);
+        page.fillOval(43 + 190 + 95, 85, 30, 30);
         page.setColor(white);
-        page.fillOval(49 + 190 + 95, 85, 19, 19);
+        page.fillOval(49 + 190 + 95, 90, 19, 19);
 
         // DRAW WHO'S TURN or WINNER
         page.setColor(black);
@@ -131,7 +107,9 @@ public class TicTacToe extends JPanel implements ActionListener {
         if (gameDone) {
             if (winner == 1) { // x
                 page.drawString("The winner is", 310, 150);
-                page.drawImage(xImg, 335, 160, null);
+                page2.setStroke(new BasicStroke(7));
+                page2.drawLine(352, 170, 382,200);
+                page2.drawLine(382, 170, 352,200);
             } else if (winner == 2) { // o
                 page.drawString("The winner is", 310, 150);
                 page.setColor(black);
@@ -158,12 +136,12 @@ public class TicTacToe extends JPanel implements ActionListener {
     public void drawGame(Graphics page) {
         for (int i = 0; i < 3; i++) {
             for (int j = 0; j < 3; j++) {
-                if (board[i][j] == 0) {
-
-                } else if (board[i][j] == 1) {
-                    ImageIcon xIcon = new ImageIcon("blackX.png");
-                    Image xImg = xIcon.getImage();
-                    page.drawImage(xImg, 30 + 95 * i, 30 + 95 * j, null);
+                if (board[i][j] == 1) {
+                    Graphics2D page2 = (Graphics2D) page;
+                    page2.setStroke(new BasicStroke(9));
+                    page2.setColor(black);
+                    page2.drawLine(15 + (96 * i) + 20, 15 + (96 * j) + 20, 15 + (96 * i) + 60,15 + (96 * j) + 60);
+                    page2.drawLine(15 + (96 * i) + 60, 15 + (96 * j) + 20, 15 + (96 * i) + 20,15 + (96 * j) + 60);
                 } else if (board[i][j] == 2) {
                     page.setColor(black);
                     page.fillOval(30 + 95 * i, 30 + 95 * j, 50, 50);
@@ -275,18 +253,16 @@ public class TicTacToe extends JPanel implements ActionListener {
     }
 
     public static void playerx() {
-        Move bestMove = findBestMove(board);
+        bestMove = findBestMove(board);
         //System.out.println(bestMove.getRow());
         //System.out.println(bestMove.getCol());
-        board[bestMove.getRow()][bestMove.getCol()] = 1;
+        board[bestMove[0]][bestMove[1]] = 1;
         playerX = false;
     }
 
-    public static Move findBestMove(int board[][]) {
+    public static int[] findBestMove(int[][] board) {
         int bestVal = Integer.MIN_VALUE;
-        Move bestMove = new Move();
-        bestMove.setRow(-1);
-        bestMove.setCol(-1);
+        bestMove = new int[]{-1, -1};
 
         for (int row = 0; row < board.length; row++) {
             for (int col = 0; col < board[row].length; col++) {
@@ -296,8 +272,8 @@ public class TicTacToe extends JPanel implements ActionListener {
                     board[row][col] = 0;
                     //System.out.println(minimaxVal);
                     if (minimaxVal > bestVal) {
-                        bestMove.setRow(row);
-                        bestMove.setCol(col);
+                        bestMove[0] = row;
+                        bestMove[1] = col;
                         bestVal = minimaxVal;
                     }
                 }
@@ -368,7 +344,7 @@ public class TicTacToe extends JPanel implements ActionListener {
         }
 
         // Checking columns for win
-        for (int col = 0; col < board.length; col++) {
+        for (int col = 0; col < board[0].length; col++) {
             if (board[0][col] == board[1][col] && board[0][col] == board[2][col]) {
                 if (board[0][col] == computer) {
                     return 1;
