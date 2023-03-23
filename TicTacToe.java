@@ -14,12 +14,13 @@ public class TicTacToe extends JPanel implements ActionListener {
     static boolean playerX; // true if player X's turn, false if player O's turn
     static boolean xThinking;
     static boolean gameDone = false; // true if game is over
-    static int winner = -1; // 0 if X wins, 1 if O wins, -1 if no winner yet
     static int xWins = 0;
     static int oWins = 0; // number of wins for each player
-    static int[][] board = new int[3][3]; // 0 if empty, 1 if X, 2 if O
-    static int computer = 1, human = 2;
-    static int[] bestMove = {-1, -1};
+    static char[][] board = new char[3][3];
+    static char computer = 'x', human = 'o', empty = '\u0000', tie = 't', noWinnerYet = 'n';
+    static char winner = noWinnerYet;
+    static int[] bestMove = {-1,-1};
+    static int pointValue = 1;
 
     // paint variables
     static int a = 0; // used for drawing the X's and O's
@@ -50,8 +51,8 @@ public class TicTacToe extends JPanel implements ActionListener {
     }
 
     public static void newGame() {
-        board = new int[3][3];
-        winner = -1;
+        board = new char[3][3];
+        winner = noWinnerYet;
         gameDone = false;
         playerX = false;
         resetButton.setVisible(false);
@@ -105,18 +106,18 @@ public class TicTacToe extends JPanel implements ActionListener {
         page.setFont(font1);
 
         if (gameDone) {
-            if (winner == 1) { // x
+            if (winner == computer) { // x
                 page.drawString("The winner is", 310, 150);
                 page2.setStroke(new BasicStroke(7));
                 page2.drawLine(352, 170, 382,200);
                 page2.drawLine(382, 170, 352,200);
-            } else if (winner == 2) { // o
+            } else if (winner == human) { // o
                 page.drawString("The winner is", 310, 150);
                 page.setColor(black);
                 page.fillOval(332, 160, 50, 50);
                 page.setColor(white);
                 page.fillOval(342, 170, 30, 30);
-            } else if (winner == 3) { // tie
+            } else if (winner == tie) { // tie
                 page.drawString("It's a tie", 330, 178);
             }
         } else {
@@ -124,25 +125,25 @@ public class TicTacToe extends JPanel implements ActionListener {
             page.setFont(font2);
             page.drawString("", 350, 160);
             if (playerX) {
-                page.drawString("X 's Turn", 315, 180);
+                page.drawString("X's Turn", 315, 180);
             } else {
-                page.drawString("O 's Turn", 315, 180);
+                page.drawString("O's Turn", 315, 180);
             }
         }
-        Font c = new Font("Courier", Font.BOLD + Font.CENTER_BASELINE, 13);
+        Font c = new Font("Courier", Font.BOLD, 13);
         page.setFont(c);
     }
 
     public void drawGame(Graphics page) {
         for (int i = 0; i < 3; i++) {
             for (int j = 0; j < 3; j++) {
-                if (board[i][j] == 1) {
+                if (board[i][j] == computer) {
                     Graphics2D page2 = (Graphics2D) page;
                     page2.setStroke(new BasicStroke(9));
                     page2.setColor(black);
                     page2.drawLine(15 + (96 * i) + 20, 15 + (96 * j) + 20, 15 + (96 * i) + 60,15 + (96 * j) + 60);
                     page2.drawLine(15 + (96 * i) + 60, 15 + (96 * j) + 20, 15 + (96 * i) + 20,15 + (96 * j) + 60);
-                } else if (board[i][j] == 2) {
+                } else if (board[i][j] == human) {
                     page.setColor(black);
                     page.fillOval(30 + 95 * i, 30 + 95 * j, 50, 50);
                     page.setColor(white);
@@ -172,7 +173,7 @@ public class TicTacToe extends JPanel implements ActionListener {
             if (!gameDone && !playerX) {
                 a = event.getX();
                 b = event.getY();
-                int selX = 0, selY = 0;
+                int selX, selY;
                 if (a > 12 && a < 99) {
                     selX = 0;
                 } else if (a > 103 && a < 195) {
@@ -194,17 +195,17 @@ public class TicTacToe extends JPanel implements ActionListener {
                 }
                 if (selX != -1 && selY != -1) {
 
-                    if (board[selX][selY] == 0) {
+                    if (board[selX][selY] == empty) {
                         if (!playerX) {
-                            board[selX][selY] = 2;
+                            board[selX][selY] = human;
                             playerX = true;
                         }
 
-                        if (!checkBoardFull(board)) {
+                        if (checkBoardFull(board)) {
                             gameDone = true;
-                            winner = 3;
-                            xWins += 1;
-                            oWins += 1;
+                            winner = tie;
+                            xWins += pointValue;
+                            oWins += pointValue;
                             resetButton.setVisible(true);
                         } else {
                             new java.util.Timer().schedule(
@@ -212,20 +213,20 @@ public class TicTacToe extends JPanel implements ActionListener {
                                         @Override
                                         public void run() {
                                             xThinking = true;
-                                            playerx();
+                                            playerX();
                                             xThinking = false;
                                             repaint();
                                             int status = checkBoardStatus(board);
-                                            if (status == 1) {
+                                            if (status == pointValue) {
                                                 gameDone = true;
                                                 winner = computer;
-                                                xWins += 1;
+                                                xWins += pointValue;
                                                 resetButton.setVisible(true);
                                             }
-                                            if (status == -1) {
+                                            if (status == -pointValue) {
                                                 gameDone = true;
                                                 winner = human;
-                                                oWins += 1;
+                                                oWins += pointValue;
                                                 resetButton.setVisible(true);
                                             }
                                         }
@@ -233,44 +234,41 @@ public class TicTacToe extends JPanel implements ActionListener {
                                     500
                             );
                         }
-                        //System.out.println(" CLICK= x:" + a + ",y: " + b + "; selX,selY: " + selX + "," + selY);
                     }
                 }
             }
         }
 
-        public void mouseReleased(MouseEvent event) {
+        @Override
+        public void mousePressed(MouseEvent e) {
         }
-
-        public void mouseEntered(MouseEvent event) {
+        @Override
+        public void mouseReleased(MouseEvent e) {
         }
-
-        public void mouseExited(MouseEvent event) {
+        @Override
+        public void mouseEntered(MouseEvent e) {
         }
-
-        public void mousePressed(MouseEvent event) {
+        @Override
+        public void mouseExited(MouseEvent e) {
         }
     }
 
-    public static void playerx() {
+    public static void playerX() {
         bestMove = findBestMove(board);
-        //System.out.println(bestMove.getRow());
-        //System.out.println(bestMove.getCol());
-        board[bestMove[0]][bestMove[1]] = 1;
+        board[bestMove[0]][bestMove[1]] = computer;
         playerX = false;
     }
 
-    public static int[] findBestMove(int[][] board) {
+    public static int[] findBestMove(char[][] board) {
         int bestVal = Integer.MIN_VALUE;
         bestMove = new int[]{-1, -1};
 
         for (int row = 0; row < board.length; row++) {
             for (int col = 0; col < board[row].length; col++) {
-                if (board[row][col] == 0) {
+                if (board[row][col] == empty) {
                     board[row][col] = computer;
                     int minimaxVal = minimax(board, 0, false);
-                    board[row][col] = 0;
-                    //System.out.println(minimaxVal);
+                    board[row][col] = empty;
                     if (minimaxVal > bestVal) {
                         bestMove[0] = row;
                         bestMove[1] = col;
@@ -282,91 +280,90 @@ public class TicTacToe extends JPanel implements ActionListener {
         return bestMove;
     }
 
-    public static int minimax(int board[][], int depth, Boolean isMax) {
-        int score = checkBoardStatus(board);
-        if (score == 1 || score == -1) {
-            return score;
-        }
-
-        if (checkBoardFull(board) == false) {
+    public static int minimax(char[][] board, int depth, Boolean isMax) {
+        if (checkBoardStatus(board) == pointValue || checkBoardStatus(board) == -pointValue) {
+            return checkBoardStatus(board);
+        } else if (checkBoardFull(board)) {
             return 0;
         }
 
+        int best;
         if (isMax) {
-            int best = Integer.MIN_VALUE;
+            best = Integer.MIN_VALUE;
             for (int row = 0; row < board.length; row++) {
                 for (int col = 0; col < board[row].length; col++) {
-                    if (board[row][col] == 0) {
+                    if (board[row][col] == empty) {
                         board[row][col] = computer;
-                        best = Math.max(best, minimax(board, depth++, !isMax));
-                        board[row][col] = 0;
+                        best = Math.max(best, minimax(board, depth++, false));
+                        board[row][col] = empty;
                     }
                 }
             }
-            return best;
         } else {
-            int best = Integer.MAX_VALUE;
+            best = Integer.MAX_VALUE;
             for (int row = 0; row < board.length; row++) {
                 for (int col = 0; col < board[row].length; col++) {
-                    if (board[row][col] == 0) {
+                    if (board[row][col] == empty) {
                         board[row][col] = human;
-                        best = Math.min(best, minimax(board, depth++, !isMax));
-                        board[row][col] = 0;
+                        best = Math.min(best, minimax(board, depth++, true));
+                        board[row][col] = empty;
                     }
                 }
             }
-            return best;
         }
+        return best;
     }
 
-    static Boolean checkBoardFull(int board[][]) {
-        for (int row = 0; row < board.length; row++) {
-            for (int col = 0; col < board[row].length; col++) {
-                if (board[row][col] == 0) {
-                    return true;
+    static Boolean checkBoardFull(char[][] board) {
+        for (char[] rows : board) {
+            for (int element : rows) {
+                if (element == empty) {
+                    return false;
                 }
             }
         }
-        return false;
+        return true;
     }
 
-    public static int checkBoardStatus(int board[][]) {
+    public static int checkBoardStatus(char[][] board) {
 
-        // Checking rows for win
-        for (int row = 0; row < board.length; row++) {
-            if (board[row][0] == board[row][1] && board[row][0] == board[row][2]) {
-                if (board[row][0] == computer) {
-                    return 1;
-                } else if (board[row][0] == human) {
-                    return -1;
+        // Check rows for win
+        for (char[] rows : board) {
+            if (rows[0] == rows[1] && rows[0] == rows[2]) {
+                if (rows[0] == computer) {
+                    return pointValue;
+                } else if (rows[0] == human) {
+                    return -pointValue;
                 }
             }
         }
 
-        // Checking columns for win
+        // Check columns for win
         for (int col = 0; col < board[0].length; col++) {
             if (board[0][col] == board[1][col] && board[0][col] == board[2][col]) {
                 if (board[0][col] == computer) {
-                    return 1;
+                    return pointValue;
                 } else if (board[0][col] == human) {
-                    return -1;
+                    return -pointValue;
                 }
             }
         }
 
-        // Checking diagonals for win
+        // Check right diagonal for win
         if (board[0][0] == board[1][1] && board[0][0] == board[2][2]) {
             if (board[0][0] == computer) {
-                return 1;
+                return pointValue;
             } else if (board[0][0] == human) {
-                return -1;
+                return -pointValue;
             }
         }
+
+        // Check left diagonal for win
         if (board[0][2] == board[1][1] && board[0][2] == board[2][0]) {
             if (board[0][2] == computer) {
-                return 1;
+                return pointValue;
             } else if (board[0][2] == human) {
-                return -1;
+                return -pointValue;
             }
         }
 
