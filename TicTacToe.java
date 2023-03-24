@@ -21,7 +21,7 @@ public class TicTacToe extends JPanel implements ActionListener {
     static char winner = noWinnerYet;
     static int[] bestMove = {-1, -1};
     static int utility = 25;
-    static int winPoint =1;
+    static int winPoint = 1;
 
     // paint variables
     static int a = 0; // used for drawing the X's and O's
