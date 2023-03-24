@@ -20,7 +20,8 @@ public class TicTacToe extends JPanel implements ActionListener {
     static char computer = 'x', human = 'o', empty = '\u0000', tie = 't', noWinnerYet = 'n';
     static char winner = noWinnerYet;
     static int[] bestMove = {-1, -1};
-    static int pointValue = 25;
+    static int utility = 25;
+    static int gamePoint =1;
 
     // paint variables
     static int a = 0; // used for drawing the X's and O's
@@ -204,8 +205,8 @@ public class TicTacToe extends JPanel implements ActionListener {
                         if (checkBoardFull(board)) {
                             gameDone = true;
                             winner = tie;
-                            xWins += pointValue/pointValue;
-                            oWins += pointValue/pointValue;
+                            xWins += gamePoint;
+                            oWins += gamePoint;
                             resetButton.setVisible(true);
                         } else {
                             new java.util.Timer().schedule(
@@ -213,10 +214,10 @@ public class TicTacToe extends JPanel implements ActionListener {
                                         @Override
                                         public void run() {
                                             int status = checkBoardStatus(board);
-                                            if (status == -pointValue) {
+                                            if (status == -utility) {
                                                 gameDone = true;
                                                 winner = human;
-                                                oWins += pointValue/pointValue;
+                                                oWins += gamePoint;
                                                 resetButton.setVisible(true);
                                             } else {
                                                 xThinking = true;
@@ -225,16 +226,16 @@ public class TicTacToe extends JPanel implements ActionListener {
                                                 repaint();
                                             }
                                             status = checkBoardStatus(board);
-                                            if (status == pointValue) {
+                                            if (status == utility) {
                                                 gameDone = true;
                                                 winner = computer;
-                                                xWins += pointValue/pointValue;
+                                                xWins += gamePoint;
                                                 resetButton.setVisible(true);
                                             }
-                                            if (status == -pointValue) {
+                                            if (status == -utility) {
                                                 gameDone = true;
                                                 winner = human;
-                                                oWins += pointValue/pointValue;
+                                                oWins += gamePoint;
                                                 resetButton.setVisible(true);
                                             }
                                         }
@@ -293,8 +294,8 @@ public class TicTacToe extends JPanel implements ActionListener {
 
     public static int minimax(char[][] board, int depth, Boolean isMax) {
         //System.out.println(depth);
-        if (checkBoardStatus(board) == pointValue || checkBoardStatus(board) == -pointValue) {
-            return checkBoardStatus(board) - (depth * (checkBoardStatus(board) / pointValue));
+        if (checkBoardStatus(board) == utility || checkBoardStatus(board) == -utility) {
+            return checkBoardStatus(board) - (depth * (checkBoardStatus(board) / utility));
         } else if (checkBoardFull(board)) {
             return 0;
         }
@@ -343,9 +344,9 @@ public class TicTacToe extends JPanel implements ActionListener {
         for (char[] rows : board) {
             if (rows[0] == rows[1] && rows[0] == rows[2]) {
                 if (rows[0] == computer) {
-                    return pointValue;
+                    return utility;
                 } else if (rows[0] == human) {
-                    return -pointValue;
+                    return -utility;
                 }
             }
         }
@@ -354,9 +355,9 @@ public class TicTacToe extends JPanel implements ActionListener {
         for (int col = 0; col < board[0].length; col++) {
             if (board[0][col] == board[1][col] && board[0][col] == board[2][col]) {
                 if (board[0][col] == computer) {
-                    return pointValue;
+                    return utility;
                 } else if (board[0][col] == human) {
-                    return -pointValue;
+                    return -utility;
                 }
             }
         }
@@ -364,18 +365,18 @@ public class TicTacToe extends JPanel implements ActionListener {
         // Check right diagonal for win
         if (board[0][0] == board[1][1] && board[0][0] == board[2][2]) {
             if (board[0][0] == computer) {
-                return pointValue;
+                return utility;
             } else if (board[0][0] == human) {
-                return -pointValue;
+                return -utility;
             }
         }
 
         // Check left diagonal for win
         if (board[0][2] == board[1][1] && board[0][2] == board[2][0]) {
             if (board[0][2] == computer) {
-                return pointValue;
+                return utility;
             } else if (board[0][2] == human) {
-                return -pointValue;
+                return -utility;
             }
         }
         return 0;
