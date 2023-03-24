@@ -19,8 +19,8 @@ public class TicTacToe extends JPanel implements ActionListener {
     static char[][] board = new char[3][3];
     static char computer = 'x', human = 'o', empty = '\u0000', tie = 't', noWinnerYet = 'n';
     static char winner = noWinnerYet;
-    static int[] bestMove = {-1,-1};
-    static int pointValue = 1;
+    static int[] bestMove = {-1, -1};
+    static int pointValue = 25;
 
     // paint variables
     static int a = 0; // used for drawing the X's and O's
@@ -91,7 +91,7 @@ public class TicTacToe extends JPanel implements ActionListener {
         // DRAW score X
         Graphics2D page2 = (Graphics2D) page;
         page2.setStroke(new BasicStroke(7));
-        page2.drawLine(332, 55, 352,75);
+        page2.drawLine(332, 55, 352, 75);
         page2.drawLine(352, 55, 332, 75);
 
         // DRAW score O
@@ -109,8 +109,8 @@ public class TicTacToe extends JPanel implements ActionListener {
             if (winner == computer) { // x
                 page.drawString("The winner is", 310, 150);
                 page2.setStroke(new BasicStroke(7));
-                page2.drawLine(352, 170, 382,200);
-                page2.drawLine(382, 170, 352,200);
+                page2.drawLine(352, 170, 382, 200);
+                page2.drawLine(382, 170, 352, 200);
             } else if (winner == human) { // o
                 page.drawString("The winner is", 310, 150);
                 page.setColor(black);
@@ -141,8 +141,8 @@ public class TicTacToe extends JPanel implements ActionListener {
                     Graphics2D page2 = (Graphics2D) page;
                     page2.setStroke(new BasicStroke(9));
                     page2.setColor(black);
-                    page2.drawLine(15 + (96 * i) + 20, 15 + (96 * j) + 20, 15 + (96 * i) + 60,15 + (96 * j) + 60);
-                    page2.drawLine(15 + (96 * i) + 60, 15 + (96 * j) + 20, 15 + (96 * i) + 20,15 + (96 * j) + 60);
+                    page2.drawLine(15 + (96 * i) + 20, 15 + (96 * j) + 20, 15 + (96 * i) + 60, 15 + (96 * j) + 60);
+                    page2.drawLine(15 + (96 * i) + 60, 15 + (96 * j) + 20, 15 + (96 * i) + 20, 15 + (96 * j) + 60);
                 } else if (board[i][j] == human) {
                     page.setColor(black);
                     page.fillOval(30 + 95 * i, 30 + 95 * j, 50, 50);
@@ -204,29 +204,37 @@ public class TicTacToe extends JPanel implements ActionListener {
                         if (checkBoardFull(board)) {
                             gameDone = true;
                             winner = tie;
-                            xWins += pointValue;
-                            oWins += pointValue;
+                            xWins += pointValue/pointValue;
+                            oWins += pointValue/pointValue;
                             resetButton.setVisible(true);
                         } else {
                             new java.util.Timer().schedule(
                                     new java.util.TimerTask() {
                                         @Override
                                         public void run() {
-                                            xThinking = true;
-                                            playerX();
-                                            xThinking = false;
-                                            repaint();
                                             int status = checkBoardStatus(board);
+                                            if (status == -pointValue) {
+                                                gameDone = true;
+                                                winner = human;
+                                                oWins += pointValue/pointValue;
+                                                resetButton.setVisible(true);
+                                            } else {
+                                                xThinking = true;
+                                                playerX();
+                                                xThinking = false;
+                                                repaint();
+                                            }
+                                            status = checkBoardStatus(board);
                                             if (status == pointValue) {
                                                 gameDone = true;
                                                 winner = computer;
-                                                xWins += pointValue;
+                                                xWins += pointValue/pointValue;
                                                 resetButton.setVisible(true);
                                             }
                                             if (status == -pointValue) {
                                                 gameDone = true;
                                                 winner = human;
-                                                oWins += pointValue;
+                                                oWins += pointValue/pointValue;
                                                 resetButton.setVisible(true);
                                             }
                                         }
@@ -242,12 +250,15 @@ public class TicTacToe extends JPanel implements ActionListener {
         @Override
         public void mousePressed(MouseEvent e) {
         }
+
         @Override
         public void mouseReleased(MouseEvent e) {
         }
+
         @Override
         public void mouseEntered(MouseEvent e) {
         }
+
         @Override
         public void mouseExited(MouseEvent e) {
         }
@@ -281,8 +292,9 @@ public class TicTacToe extends JPanel implements ActionListener {
     }
 
     public static int minimax(char[][] board, int depth, Boolean isMax) {
+        //System.out.println(depth);
         if (checkBoardStatus(board) == pointValue || checkBoardStatus(board) == -pointValue) {
-            return checkBoardStatus(board);
+            return checkBoardStatus(board) - (depth * (checkBoardStatus(board) / pointValue));
         } else if (checkBoardFull(board)) {
             return 0;
         }
@@ -366,7 +378,6 @@ public class TicTacToe extends JPanel implements ActionListener {
                 return -pointValue;
             }
         }
-
         return 0;
     }
 
@@ -374,5 +385,4 @@ public class TicTacToe extends JPanel implements ActionListener {
     public void actionPerformed(ActionEvent e) {
         newGame();
     }
-
 }
